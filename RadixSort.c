@@ -1,78 +1,49 @@
 #include <stdio.h>
-#include <stdlib.h>
-
-int getMax(int arr[], int n) {
-    int max = arr[0];
-    for (int i = 1; i < n; i++) {
-        if (arr[i] > max)
-            max = arr[i];
-    }
-    return max;
-}
 
 void countingSort(int arr[], int n, int exp) {
-    int output[n]; 
-    int count[10] = {0}; 
+    int output[n];
+    int count[10] = {0};
 
-  
-    for (int i = 0; i < n; i++) {
-        int digit = (arr[i] / exp) % 10;
-        count[digit]++;
-    }
+    // Count occurrences of each digit
+    for (int i = 0; i < n; i++)
+        count[(arr[i] / exp) % 10]++;
 
-   
-    for (int i = 1; i < 10; i++) {
+    // Calculate cumulative frequencies
+    for (int i = 1; i < 10; i++)
         count[i] += count[i - 1];
-    }
 
-
+    // Place elements in output array
     for (int i = n - 1; i >= 0; i--) {
-        int digit = (arr[i] / exp) % 10;
-        output[count[digit] - 1] = arr[i];
-        count[digit]--;
+        output[count[(arr[i] / exp) % 10] - 1] = arr[i];
+        count[(arr[i] / exp) % 10]--;
     }
 
-  
-    for (int i = 0; i < n; i++) {
+    // Copy sorted elements back to original array
+    for (int i = 0; i < n; i++)
         arr[i] = output[i];
-    }
 }
-
 
 void radixSort(int arr[], int n) {
-    int max = getMax(arr, n);
+    // Find the maximum number to determine the number of digits
+    int max = arr[0];
+    for (int i = 1; i < n; i++)
+        if (arr[i] > max)
+            max = arr[i];
 
-    for (int exp = 1; max / exp > 0; exp *= 10) {
+    // Do counting sort for every digit, starting from the least significant digit
+    for (int exp = 1; max / exp > 0; exp *= 10)
         countingSort(arr, n, exp);
-    }
-}
-
-void printArray(int arr[], int n) {
-    for (int i = 0; i < n; i++) {
-        printf("%d ", arr[i]);
-    }
-    printf("\n");
 }
 
 int main() {
-    int n;
-
-    printf("Enter the number of elements: ");
-    scanf("%d", &n);
-
-    int arr[n];
-    printf("Enter the elements:\n");
-    for (int i = 0; i < n; i++) {
-        scanf("%d", &arr[i]);
-    }
-
-    printf("Original array:\n");
-    printArray(arr, n);
+    int arr[] = {170, 45, 75, 90, 802, 24, 2, 66};
+    int n = sizeof(arr) / sizeof(arr[0]);
 
     radixSort(arr, n);
 
-    printf("Sorted array:\n");
-    printArray(arr, n);
+    printf("Sorted array: \n");
+    for (int i = 0; i < n; i++)
+        printf("%d ", arr[i]);
 
     return 0;
 }
